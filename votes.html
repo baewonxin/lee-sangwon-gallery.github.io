@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+    @import url('https://fonts.cdnfonts.com/css/poppins');
+    
+    /* Reset and Base Styles */
+    * { 
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.3;
+    }
+
+    .bg-animation::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(109, 93, 252, 0.1) 0%, transparent 70%);
+        animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-50%, -50%) rotate(180deg); }
+        100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Improved Navigation */
+    nav {
+        width: 100%;
+        height: auto;
+        min-height: 70px;
+        background: rgba(37, 40, 59, 0.95);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        font-family: 'ICA Rubrik';
+        padding: 15px 5%;
+        border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+    }
+
+    .nav-top {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    nav h1 {
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
+        color: white;
+        font-weight: 500;
+        margin: 0;
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-toggle:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-links {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    nav a {
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        color: #d0cee0;
+        font-weight: 400;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+        text-decoration: none;
+        padding: 8px 16px;
+        white-space: nowrap;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    nav a:hover::before {
+        left: 100%;
+    }
+
+    nav a:hover,
+    nav a.active {
+        color: #ffffff;
+        background: rgba(109, 93, 252, 0.1);
+        border-bottom: 2px solid #6d5dfc;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(109, 93, 252, 0.3);
+    }
+
+    /* Main Content Area */
+    .main-content {
+        margin-top: 100px;
+        padding: 40px 5%;
+        min-height: calc(100vh - 100px);
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding: 60px 0 40px;
+        position: relative;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #6d5dfc, #a363d9);
+        border-radius: 2px;
+    }
+
+    .page-header h1 {
+        font-family: 'ICA Rubrik';
+        font-size: clamp(3rem, 8vw, 5rem);
+        color: #fff;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, #ffffff, #d0cee0, #6d5dfc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 10px 30px rgba(109, 93, 252, 0.3);
+    }
+
+    .page-header p {
+        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        color: #d0cee0;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    /* Admin Panel */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        margin-bottom: 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar h1 {
+        margin: 0;
+        font-size: clamp(1.3rem, 4vw, 1.6rem);
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .navbar button {
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        color: white;
+        border: none;
+        padding: clamp(12px, 2vw, 15px) clamp(18px, 3vw, 24px);
+        border-radius: 12px;
+        cursor: pointer;
+        font-family: 'ICA Rubrik';
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(109, 93, 252, 0.4);
+    }
+
+    .navbar button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(109, 93, 252, 0.6);
+        background: linear-gradient(45deg, #a363d9, #6d5dfc);
+    }
+
+    .container {
+        padding: clamp(20px, 5vw, 30px);
+        text-align: center;
+    }
+
+    .admin-panel {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        margin: 40px auto;
+        padding: clamp(25px, 4vw, 40px);
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        max-width: 700px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+    }
+
+    .admin-panel h3 {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        color: #ffffff;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        max-width: 400px;
+        padding: 15px 20px;
+        margin: 12px 0;
+        border: 2px solid rgba(109, 93, 252, 0.3);
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        font-family: "Poppins", sans-serif;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        border-color: #6d5dfc;
+        outline: none;
+        box-shadow: 0 0 20px rgba(109, 93, 252, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    input::placeholder, textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .addLink {
+        margin-top: 20px;
+        padding: 15px 30px;
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        width: 100%;
+        max-width: 250px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(109, 93, 252, 0.4);
+    }
+
+    .addLink:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(109, 93, 252, 0.6);
+        background: linear-gradient(45deg, #a363d9, #6d5dfc);
+    }
+
+    /* Links Grid */
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: clamp(20px, 4vw, 30px);
+        margin: 50px 0;
+        padding: 0 5%;
+    }
+
+    .link-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        backdrop-filter: blur(10px);
+        padding: clamp(25px, 3vw, 30px);
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .link-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .link-card:hover::before {
+        left: 100%;
+    }
+
+    .link-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(109, 93, 252, 0.4);
+    }
+
+    .link-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 3px solid rgba(109, 93, 252, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .link-card:hover img {
+        transform: scale(1.1);
+        border-color: rgba(109, 93, 252, 0.6);
+    }
+
+    .link-card p {
+        margin: 0;
+        font-weight: bold;
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .link-card a {
+        text-decoration: none;
+        color: inherit;
+        display: contents;
+    }
+
+    /* Admin buttons for links */
+    .link-card .admin-buttons {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    }
+
+    .link-card:hover .admin-buttons {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .link-card .admin-buttons button {
+        background: linear-gradient(45deg, #3742fa, #5352ed);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .link-card .admin-buttons button:last-child {
+        background: linear-gradient(45deg, #ff4757, #ff3742);
+    }
+
+    .link-card .admin-buttons button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* No Links Message */
+    .no-links {
+        text-align: center;
+        padding: 80px 40px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.3rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 2px dashed rgba(109, 93, 252, 0.3);
+        backdrop-filter: blur(10px);
+        grid-column: 1 / -1;
+    }
+
+    .no-links i {
+        font-size: 3rem;
+        color: rgba(109, 93, 252, 0.5);
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    /* Footer - Enhanced */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icons a {
+            color: #d0cee0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-icons a:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.4);
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(109, 93, 252, 0.5);
+        }
+
+    /* Enhanced Responsive Design */
+    @media screen and (max-width: 1023px) {
+        .nav-links {
+            gap: 10px;
+        }
+        
+        nav a {
+            padding: 8px 14px;
+            font-size: 0.9rem;
+        }
+        
+        .link-card {
+            padding: 25px;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: block;
+        }
+        
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            gap: 0;
+        }
+        
+        .nav-links.active {
+            display: flex;
+        }
+        
+        nav a {
+            font-size: 1.1rem;
+            padding: 15px;
+            border-bottom: 1px solid rgba(109, 93, 252, 0.2);
+            width: 100%;
+            margin: 2px 0;
+        }
+
+        .main-content {
+            margin-top: 90px;
+            padding: 20px;
+        }
+
+        .navbar {
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .links-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .link-card .admin-buttons {
+            position: static;
+            opacity: 1;
+            transform: none;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        input, textarea, select {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .admin-panel {
+            margin: 20px 0;
+            padding: 25px 20px;
+        }
+        
+        .link-card {
+            padding: 20px;
+        }
+        
+        .page-header {
+            padding: 40px 0 20px;
+        }
+    }
+
+    /* Scroll Animations */
+    .link-card {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger animation for multiple cards */
+    .link-card:nth-child(1) { animation-delay: 0.1s; }
+    .link-card:nth-child(2) { animation-delay: 0.2s; }
+    .link-card:nth-child(3) { animation-delay: 0.3s; }
+    .link-card:nth-child(4) { animation-delay: 0.4s; }
+    .link-card:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Loading Animation */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #6d5dfc;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Focus styles for accessibility */
+    button:focus,
+    a:focus,
+    input:focus,
+    select:focus {
+        outline: 2px solid #6d5dfc;
+        outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="nav-top">
+                <h1>Lee Sangwon Voting Team</h1>
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="announcements.html">Announcements</a>
+                <a href="votes.html" class="active">Voting Polls</a>
+                <a href="stream.html">Streaming links</a>
+                <a href="guides.html">Guides</a>
+                <a href="about.html">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Voting Polls</h1>
+            <p>Participate in the voting polls</p>
+        </div>
+
+        <div class="navbar">
+            <h1>On-going polls</h1>
+            <button id="adminToggle">Admin Mode</button>
+        </div>
+
+        <div class="container">
+            <!-- ADMIN PANEL -->
+            <div id="adminPanel" class="hidden">
+                <h3>Add New Voting Link</h3>
+                <input type="file" id="imageInput" accept="image/*">
+                <input type="text" id="linkName" placeholder="Vote Title">
+                <input type="text" id="linkURL" placeholder="Vote URL">
+                
+                <select id="pageSelect">
+                    <option value="guides">Guides Page</option>
+                    <option value="votes" selected>Votes Page</option>
+                    <option value="stream">Stream Page</option>
+                </select>
+
+                <button id="addLink" class="addLink">
+                    <i class="fas fa-vote-yea"></i> Add Vote Link
+                </button>
+            </div>
+        </div>
+
+        <!-- Display links -->
+        <div id="linksGrid" class="links-grid">
+            <!-- Links will be dynamically inserted here -->
+        </div>
+    </div>
+ <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">© 2025 by wonxinau , all rights reserved</p>
+ 
+        <div class="social-icons">
+            <a href="https://x.com/SANGWONVT"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://tpeepgwctvpricbngrrw.supabase.co'; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwZWVwZ3djdHZwcmljYm5ncnJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2NTc1NjMsImV4cCI6MjA3OTIzMzU2M30.squzAvecPN1EwGMQbHZv3iK6A3MZmW48xDcIgpuy8ug'; // Replace with your Supabase anon key
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+       
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // Close mobile menu when clicking on a link
+            const navLinksArray = document.querySelectorAll('.nav-links a');
+            navLinksArray.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 767) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Your JavaScript functionality
+        const adminBtn = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        let adminMode = false;
+
+        // Check if user was previously in admin mode
+        if (localStorage.getItem('isAdmin') === 'true') {
+            adminMode = true;
+            adminPanel.classList.remove('hidden');
+            adminBtn.textContent = "Exit Admin Mode";
+        }
+
+        adminBtn.addEventListener('click', () => {
+            if (!adminMode) {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === "12345") {
+                    adminMode = true;
+                    localStorage.setItem('isAdmin', 'true');
+                    adminPanel.classList.remove('hidden');
+                    adminBtn.textContent = "Exit Admin Mode";
+                    displayLinks();
+                } else {
+                    alert("Wrong password!");
+                }
+            } else {
+                adminMode = false;
+                localStorage.removeItem('isAdmin');
+                adminPanel.classList.add('hidden');
+                adminBtn.textContent = "Admin Mode";
+                editIndex = null;
+                addLinkBtn.textContent = "Add Link";
+                displayLinks();
+            }
+        });
+
+        // --- LINKS ---
+        const linksGrid = document.getElementById('linksGrid');
+        const imageInput = document.getElementById('imageInput');
+        const linkName = document.getElementById('linkName');
+        const linkURL = document.getElementById('linkURL');
+        const addLinkBtn = document.getElementById('addLink');
+        const pageSelect = document.getElementById('pageSelect');
+
+        let editIndex = null;
+
+        // FIXED: Better page detection
+        function getCurrentPage() {
+            const path = window.location.pathname;
+            const filename = path.split('/').pop();
+            
+            // Direct match for common page names
+            if (filename.includes('votes')) return 'votes';
+            if (filename.includes('guides')) return 'guides';
+            if (filename.includes('stream')) return 'stream';
+            if (filename.includes('announcements')) return 'announcements';
+            if (filename.includes('index') || filename === '' || filename.endsWith('.html') === false) return 'home';
+            
+            // Default to filename without extension
+            return filename.replace('.html', '');
+        }
+
+        const currentPage = getCurrentPage();
+
+        // Set the page select to current page by default
+        if (pageSelect) {
+            pageSelect.value = currentPage;
+        }
+
+        // Fetch links from Supabase
+        async function fetchLinks() {
+            try {
+                const { data, error } = await supabase
+                    .from('links')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error fetching links:', error);
+                    return [];
+                }
+                
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching links:', error);
+                return [];
+            }
+        }
+
+        // Add link to Supabase
+        async function addLink(linkData) {
+            try {
+                const { data, error } = await supabase
+                    .from('links')
+                    .insert([linkData])
+                    .select();
+                
+                if (error) {
+                    console.error('Error adding link:', error);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error adding link:', error);
+                return false;
+            }
+        }
+
+        // Update link in Supabase
+        async function updateLink(id, linkData) {
+            try {
+                const { error } = await supabase
+                    .from('links')
+                    .update(linkData)
+                    .eq('id', id);
+                
+                if (error) {
+                    console.error('Error updating link:', error);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error updating link:', error);
+                return false;
+            }
+        }
+
+        // Delete link from Supabase
+        async function deleteLinkById(id) {
+            try {
+                const { error } = await supabase
+                    .from('links')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) {
+                    console.error('Error deleting link:', error);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error deleting link:', error);
+                return false;
+            }
+        }
+
+        // --- Display Links ---
+        async function displayLinks() {
+            if (!linksGrid) {
+                console.error('linksGrid element not found!');
+                return;
+            }
+            
+            // Show loading state
+            linksGrid.innerHTML = '<div class="loading" style="margin: 50px auto; grid-column: 1 / -1;"></div>';
+            
+            const links = await fetchLinks();
+            
+            linksGrid.innerHTML = '';
+            
+            // Filter links for current page
+            const filteredLinks = links.filter(link => link.page === currentPage);
+            
+            console.log('Displaying links:', {
+                currentPage: currentPage,
+                totalLinks: links.length,
+                filteredLinks: filteredLinks.length,
+                allLinks: links
+            });
+            
+            if (filteredLinks.length === 0) {
+                const noLinksMsg = document.createElement('div');
+                noLinksMsg.classList.add('no-links');
+                noLinksMsg.innerHTML = `
+                    <p>No links found for this page.</p>
+                    ${adminMode ? '<p>Add some links using the admin panel above!</p>' : '<p>Contact an admin to add links.</p>'}
+                `;
+                linksGrid.appendChild(noLinksMsg);
+            } else {
+                filteredLinks.forEach((link) => {
+                    const card = document.createElement('div');
+                    card.classList.add('link-card');
+                    card.innerHTML = `
+                        <a href="${link.url}" target="_blank">
+                            <img src="${link.image}" alt="${link.name}" onerror="this.src='https://via.placeholder.com/150/4b495e/ffffff?text=IMG'">
+                        </a>
+                        <p>${link.name}</p>
+                        ${adminMode ? `
+                            <div class="admin-buttons">
+                                <button onclick="editLink('${link.id}')">Edit</button>
+                                <button onclick="deleteLink('${link.id}')">Delete</button>
+                            </div>
+                        ` : ""}
+                    `;
+                    linksGrid.appendChild(card);
+                });
+            }
+        }
+
+        // --- Add or Edit Link ---
+        addLinkBtn.addEventListener('click', async () => {
+            const file = imageInput.files[0];
+            const name = linkName.value.trim();
+            const url = linkURL.value.trim();
+            const page = pageSelect.value;
+
+            if (!name || !url) {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            // Show loading state
+            const originalText = addLinkBtn.innerHTML;
+            addLinkBtn.innerHTML = '<span class="loading"></span> Saving...';
+            addLinkBtn.disabled = true;
+
+            try {
+                const handleSave = async (imageData) => {
+                    const linkData = { 
+                        image: imageData, 
+                        name, 
+                        url, 
+                        page
+                    };
+                    
+                    let success = false;
+                    
+                    if (editIndex !== null) {
+                        // Update existing link
+                        success = await updateLink(editIndex, linkData);
+                        if (success) {
+                            editIndex = null;
+                            addLinkBtn.textContent = "Add Link";
+                        }
+                    } else {
+                        // Add new link
+                        success = await addLink(linkData);
+                    }
+                    
+                    if (success) {
+                        await displayLinks();
+                        imageInput.value = '';
+                        linkName.value = '';
+                        linkURL.value = '';
+                        showSuccessMessage(`Link "${name}" ${editIndex ? 'updated' : 'added'} to ${page} page!`);
+                    } else {
+                        alert(`Failed to ${editIndex ? 'update' : 'add'} link. Please try again.`);
+                    }
+                };
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => await handleSave(e.target.result);
+                    reader.readAsDataURL(file);
+                } else {
+                    if (editIndex !== null) {
+                        // Keep the existing image when editing
+                        const links = await fetchLinks();
+                        const currentLink = links.find(link => link.id === editIndex);
+                        if (currentLink) {
+                            await handleSave(currentLink.image);
+                        } else {
+                            alert("Error: Could not find link to update.");
+                        }
+                    } else {
+                        alert("Please upload an image!");
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving link:', error);
+                alert("An error occurred while saving the link.");
+            } finally {
+                // Restore button state
+                addLinkBtn.innerHTML = originalText;
+                addLinkBtn.disabled = false;
+            }
+        });
+
+        // --- Delete Link ---
+        async function deleteLink(id) {
+            if (confirm("Delete this link?")) {
+                const success = await deleteLinkById(id);
+                if (success) {
+                    editIndex = null;
+                    addLinkBtn.textContent = "Add Link";
+                    await displayLinks();
+                    showSuccessMessage('Link deleted successfully!');
+                } else {
+                    alert("Failed to delete link. Please try again.");
+                }
+            }
+        }
+        window.deleteLink = deleteLink;
+
+        // --- Edit Link ---
+        async function editLink(id) {
+            const links = await fetchLinks();
+            const link = links.find(link => link.id === id);
+            
+            if (!link) {
+                alert("Link not found!");
+                return;
+            }
+            
+            linkName.value = link.name;
+            linkURL.value = link.url;
+            pageSelect.value = link.page;
+            editIndex = id;
+            addLinkBtn.textContent = "Save Changes";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        window.editLink = editLink;
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #2ed573, #27ae60);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(46, 213, 115, 0.4);
+                z-index: 1000;
+                animation: slideInRight 0.5s ease;
+            `;
+            successMsg.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => {
+                successMsg.style.animation = 'slideOutRight 0.5s ease forwards';
+                setTimeout(() => successMsg.remove(), 500);
+            }, 3000);
+        }
+
+        // Initial display
+        displayLinks();
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const navLinks = document.querySelector('.nav-links');
+            if (window.innerWidth > 767) {
+                navLinks.classList.remove('active');
+            }
+        });
+          // Fade-in elements on scroll
+            const fadeElements = document.querySelectorAll(' .footer');
+            
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+
+             // Initial check
+            checkFade();
+            window.addEventListener('scroll', checkFade);
+
+
+        // Add CSS for success message animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

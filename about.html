@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEE SANGWON</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+        @import url('https://fonts.cdnfonts.com/css/poppins');
+        
+        /* Reset and Base Styles */
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(109, 93, 252, 0.1) 0%, transparent 70%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Navigation */
+        nav {
+            width: 100%;
+            height: auto;
+            min-height: 70px;
+            background: rgba(37, 40, 59, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            font-family: 'ICA Rubrik';
+            padding: 15px 5%;
+            border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+        }
+
+        .nav-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: white;
+            font-weight: 500;
+            margin: 0;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        nav a {
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            color: #d0cee0;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            text-decoration: none;
+            padding: 8px 16px;
+            white-space: nowrap;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #ffffff;
+            background: rgba(109, 93, 252, 0.1);
+            border-bottom: 2px solid #6d5dfc;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.3);
+        }
+
+        /* Header Section */
+        .header {
+            position: relative;
+            height: 100vh;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+
+        .main-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit:contain;
+            z-index: 1;
+            padding-top: 50px;
+            filter: brightness(0.6) contrast(1.3);
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+
+        .overlapping-text {
+            position: relative;
+            z-index: 3;
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 30px rgba(109, 93, 252, 0.5);
+            letter-spacing: clamp(2px, 2vw, 8px);
+            text-align: center;
+            mix-blend-mode: normal;
+            animation: pulse 4s infinite alternate;
+            padding: 0 20px;
+            word-break: break-word;
+        }
+
+        @keyframes pulse {
+            0% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(109, 93, 252, 0.3);
+            }
+            100% {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(109, 93, 252, 0.6), 0 0 80px rgba(109, 93, 252, 0.4);
+            }
+        }
+
+        /* Infinite Text Bar */
+        .text-scroll-container {
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px 0;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scrolling-text {
+            white-space: nowrap;
+            display: inline-block;
+            animation: scroll-text 30s linear infinite;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .scrolling-text span {
+            margin-right: clamp(25px, 5vw, 60px);
+            position: relative;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .scrolling-text span:after {
+            content: "•";
+            position: absolute;
+            right: -30px;
+            color: #6d5dfc;
+            font-weight: bold;
+        }
+
+        @keyframes scroll-text {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Content Section */
+        .content {
+            padding: 80px 5%;
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            background: linear-gradient(45deg, #ffffff, #d0cee0, #6d5dfc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6d5dfc, #a363d9, transparent);
+            border-radius: 2px;
+        }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(109, 93, 252, 0.4);
+            border-color: rgba(109, 93, 252, 0.6);
+        }
+
+        .card-header {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+            font-weight: 600;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Profile Image */
+        .profile-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            filter: brightness(0.9);
+        }
+
+        .profile-card:hover .profile-image {
+            transform: scale(1.05);
+            filter: brightness(1);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(109, 93, 252, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(109, 93, 252, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(109, 93, 252, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #d0cee0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Discography */
+        .discography-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .album-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .album-item:hover {
+            background: rgba(109, 93, 252, 0.1);
+            transform: translateX(10px);
+        }
+
+        .album-cover {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .album-info {
+            flex: 1;
+        }
+
+        .album-title {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .album-year {
+            color: #6d5dfc;
+            font-size: 0.9rem;
+        }
+
+        /* Photo Gallery */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 250px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(109, 93, 252, 0.4);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-caption {
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icons a {
+            color: #d0cee0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-icons a:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.4);
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(109, 93, 252, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            /* Mobile Navigation */
+            nav {
+                padding: 10px 5%;
+            }
+            
+            .nav-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                margin-top: 15px;
+                gap: 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            nav a {
+                font-size: 1.1rem;
+                padding: 12px;
+                border-bottom: 1px solid rgba(109, 93, 252, 0.2);
+                width: 100%;
+            }
+
+            /* Header adjustments */
+            .header {
+                height: 70vh;
+                min-height: 400px;
+            }
+            
+            .overlapping-text {
+                font-size: clamp(2rem, 10vw, 4rem);
+                -webkit-text-stroke: 1px rgba(255, 255, 255, 0.9);
+            }
+
+            /* Profile card adjustments */
+            .profile-card {
+                height: auto;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .card-text {
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .social-icons {
+                gap: 15px;
+            }
+            
+            .social-icons a {
+                font-size: 1.3rem;
+                padding: 10px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small devices */
+            .header {
+                height: 60vh;
+                min-height: 300px;
+            }
+            
+            .overlapping-text {
+                font-size: clamp(1.8rem, 12vw, 3rem);
+            }
+            
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Animations */
+        .profile-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animation for multiple elements */
+        .profile-card:nth-child(1) { animation-delay: 0.1s; }
+        .profile-card:nth-child(2) { animation-delay: 0.2s; }
+        .profile-card:nth-child(3) { animation-delay: 0.3s; }
+        .profile-card:nth-child(4) { animation-delay: 0.4s; }
+        .profile-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Prevent horizontal scroll */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="loading-bar"></div>
+
+         <header class="header">
+        <nav>
+            <div class="nav-top">
+                <h1>Lee Sangwon Voting Team</h1>
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" >Home</a>
+                <a href="announcements.html">Announcements</a>
+                <a href="votes.html">Voting Polls</a>
+                <a href="stream.html">Streaming links</a>
+                <a href="guides.html">Guides</a>
+                <a href="#" class="active">About</a>
+            </div>
+        </nav>
+   
+
+        <img src="images/13.png" alt="LEE SANGWON" class="main-image">
+        <div class="overlapping-text">LEE SANGWON</div>
+    </header>
+
+    <div class="text-scroll-container">
+        <div class="scrolling-text">
+            <span>Vocalist</span>
+            <span>Main Dancer</span>
+            <span>Visual</span>
+            <span>Fashion Icon</span>
+            <span>THE CENTER</span>
+           <span>Vocalist</span>
+            <span>Main Dancer</span>
+            <span>Visual</span>
+            <span>Fashion Icon</span>
+            <span>THE CENTER</span>
+            <span>Vocalist</span>
+            <span>Main Dancer</span>
+            <span>Visual</span>
+            <span>Fashion Icon</span>
+            <span>THE CENTER</span>
+        </div>
+    </div>
+
+    <section class="content" id="about">
+        <h2 class="section-title visible">About</h2>
+        <div class="profile-grid">
+            <div class="profile-card visible">
+                <div class="card-header">
+                    <h3 class="card-title">Profile</h3>
+                </div>
+                <div class="card-content">
+                    <p class="card-text">
+                        SANGWON (상원) is an South Korean trainee under GRID Entertainment , set to debut as the center of ALD1 (Alpha Drive One)
+                        the Center of the group and winning in first place on the survival show BOYS || PLANET 
+                    </p>
+                    <p class="card-text" style="margin-top: 15px;">
+                        Known for his incredible talent and powerful stage presence, he has become one of the most recognized trainees of any survival show. 
+                        Before joining BOYS || PLANET he was a member of bighit trainee project TRAINEE A with fellow ALD1 member LEO.
+                    </p>
+                </div>
+            </div>
+            <div class="profile-card visible">
+                <img src="images/2.jpg" alt="Sangwon's Profile" class="profile-image">
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">22</div>
+                            <div class="stat-label">Age</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">177 cm </div>
+                            <div class="stat-label">Height</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">INFP</div>
+                            <div class="stat-label">MBTI Type</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">Korea</div>
+                            <div class="stat-label">Nationality</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content" id="profile">
+        <h2 class="section-title">Profile</h2>
+        <div class="profile-grid">
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Position in Group (not Official)</h3>
+                </div>
+                <div class="card-content">
+                    <p class="card-text">
+                        <strong>Lead Vocalist</strong> - He's Known for his dreamy vocal tone and emotional delivery<br>
+                        <strong>Main Dancer</strong> - Known for his precise and powerful dance moves<br>
+                        <strong>Visual</strong> - Always praised for his unique and captivating visuals<br>
+                        <strong>Center</strong> - He's said to be the best fit for the center position due to his stage presence and charisma
+                    </p>
+                </div>
+            </div>
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Skills & Talents</h3>
+                </div>
+                <div class="card-content">
+                    <p class="card-text">
+                        • Fluent in Korean and can speak English<br>
+                        • Trained for 6 years<br>
+                        • Really good at dancing<br>
+                        • A songwriter and composer
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content" id="discography">
+        <h2 class="section-title">Discography</h2>
+        <div class="profile-grid">
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Features</h3>
+                </div>
+                <div class="card-content">
+                    <div class="discography-list">
+                        <div class="album-item">
+                            <img src="images/aint no privacy.jpg"  class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">trainee a - aint no privacy</div>
+                                <div class="album-year">2023</div>
+                                
+                            </div>
+                        </div>
+                        <div class="album-item">
+                            <img src="images/nb2h.png" alt="Lunar Phase" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">never been 2 heaven</div>
+                                <div class="album-year">2025</div>
+                            </div>
+                        </div>
+                        
+                        <div class="album-item">
+                            <img src="images/chains.jpg" alt="Galaxy" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title"> love is - chains </div>
+                                <div class="album-year">2025</div>
+                            </div>
+                        </div>
+                         <div class="album-item">
+                            <img src="images/hola solar.jpg" alt="Galaxy" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title"> BOYS || PLANET - Holla Solar </div>
+                                <div class="album-year">2025</div>
+                            </div>
+                        </div>
+                          <div class="album-item">
+                            <img src="images/nb2h.png" alt="Lunar Phase" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">How To Fly</div>
+                                <div class="album-year">2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Solo Work</h3>
+                </div>
+                <div class="card-content">
+                    <div class="discography-list">
+                        <div class="album-item">
+                            <img src="images/g.jpg" alt="" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">g</div>
+                                <div class="album-year">2024</div>
+                            </div>
+                        </div>
+                        <div class="album-item">
+                            <img src="images/u.PNG" alt="" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">U</div>
+                                <div class="album-year">2023</div>
+                            </div>
+                        </div>
+                        <div class="album-item">
+                            <img src="images/nostalgia.PNG" alt="Nova" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">Nostalgia</div>
+                                <div class="album-year">2023</div>
+                            </div>
+                        </div>
+                        <div class="album-item">
+                            <img src="images/luvyoumorethan.PNG" alt="Nova" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">LUVYOUMORETHAN</div>
+                                <div class="album-year"> 2023 </div>
+                            </div>
+                        </div>
+                        <div class="album-item">
+                            <img src="images/session 0.PNG" alt="Nova" class="album-cover">
+                            <div class="album-info">
+                                <div class="album-title">session O</div>
+                                <div class="album-year">2023</div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content" id="gallery">
+        <h2 class="section-title">Gallery</h2>
+        <div class="photo-gallery">
+            <div class="gallery-item">
+                <img src="pics/s3.webp" alt="Performance" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="pics/s4.jpg" alt="Photoshoot" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="pics/s5.webp" alt="Concert" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="pics/s6.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/pre.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/fm.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/fs.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/b2p.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/nw.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/ct2.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/bp.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+             <div class="gallery-item">
+                <img src="pics/tr.jpg" alt="Backstage" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="gallery-caption"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content" id="facts">
+        <h2 class="section-title">Fun Facts</h2>
+        <div class="profile-grid">
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Personality</h3>
+                </div>
+                <div class="card-content">
+                    <p class="card-text">
+                        • MBTI: ENFP<br>
+                        • Nickname: "Chaeri", "Vocal Goddess"<br>
+                        • Known for her bright and cheerful personality<br>
+                        • Has a habit of winking during performances<br>
+                        • Loves collecting perfumes and scented candles<br>
+                        • Favorite color: Lavender
+                    </p>
+                </div>
+            </div>
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3 class="card-title">Achievements</h3>
+                </div>
+                <div class="card-content">
+                    <p class="card-text">
+                        • First survival show contestant who kept his TOP1 rank till the end.<br>
+                        • Most voted trainee of all time.<br>
+                       
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+ <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">© 2025 by wonxinau , all rights reserved</p>
+ 
+        <div class="social-icons">
+            <a href="https://x.com/SANGWONVT"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Navigation toggle for mobile
+        document.querySelector('.nav-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements that should animate on scroll
+        document.querySelectorAll('.section-title, .profile-card, .footer').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Parallax effect for header image
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            const headerImage = document.querySelector('.main-image');
+            if (headerImage) {
+                headerImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+        });
+
+        // Loading bar animation
+        window.addEventListener('load', () => {
+            const loadingBar = document.querySelector('.loading-bar');
+            loadingBar.style.width = '100%';
+            setTimeout(() => {
+                loadingBar.style.opacity = '0';
+            }, 500);
+        });
+
+        // Smooth scrolling for navigation links
+      
+    </script>
+</body>
+</html>

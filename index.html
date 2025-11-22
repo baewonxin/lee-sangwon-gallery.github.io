@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lee Sangwon | Homepage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+        @import url('https://fonts.cdnfonts.com/css/poppins');
+        
+        /* Reset and Base Styles */
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(109, 93, 252, 0.1) 0%, transparent 70%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Improved Navigation */
+        nav {
+            width: 100%;
+            height: auto;
+            min-height: 70px;
+            background: rgba(37, 40, 59, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            font-family: 'ICA Rubrik';
+            padding: 15px 5%;
+            border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+        }
+
+        .nav-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: white;
+            font-weight: 500;
+            margin: 0;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        nav a {
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            color: #d0cee0;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            text-decoration: none;
+            padding: 8px 16px;
+            white-space: nowrap;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #ffffff;
+            background: rgba(109, 93, 252, 0.1);
+            border-bottom: 2px solid #6d5dfc;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.3);
+        }
+
+        /* Floating Vote Now Button */
+        .floating-vote-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            animation: floatUpDown 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .floating-vote-button a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            border-radius: 50px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 25px rgba(109, 93, 252, 0.5);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .floating-vote-button a:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(109, 93, 252, 0.7);
+            background: linear-gradient(45deg, #a363d9, #6d5dfc);
+        }
+
+        .vote-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .vote-text {
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes floatUpDown {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Header Section - Enhanced */
+        .header {
+            position: relative;
+            height: 100vh;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-top: 70px;
+        }
+
+        .main-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            filter: brightness(0.6) contrast(1.3);
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+
+        .overlapping-text {
+            position: relative;
+            z-index: 3;
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 30px rgba(109, 93, 252, 0.5);
+            letter-spacing: clamp(2px, 2vw, 8px);
+            text-align: center;
+            mix-blend-mode: normal;
+            animation: pulse 4s infinite alternate;
+            padding: 0 20px;
+            word-break: break-word;
+        }
+
+        @keyframes pulse {
+            0% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(109, 93, 252, 0.3);
+            }
+            100% {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(109, 93, 252, 0.6), 0 0 80px rgba(109, 93, 252, 0.4);
+            }
+        }
+
+        /* Infinite Text Bar - Enhanced */
+        .text-scroll-container {
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px 0;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scrolling-text {
+            white-space: nowrap;
+            display: inline-block;
+            animation: scroll-text 30s linear infinite;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .scrolling-text span {
+            margin-right: clamp(25px, 5vw, 60px);
+            position: relative;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .scrolling-text span:after {
+            content: "•";
+            position: absolute;
+            right: -30px;
+            color: #6d5dfc;
+            font-weight: bold;
+        }
+
+        @keyframes scroll-text {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Infinite Photo Scroll Bar - Enhanced */
+        .photo-scroll-container {
+            padding: 60px 5%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+
+        .photo-scroll-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            background: linear-gradient(45deg, #ffffff, #d0cee0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .photo-scroll-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-scroll-title:after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6d5dfc, #a363d9, transparent);
+            border-radius: 2px;
+        }
+
+        .photo-scroll-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(109, 93, 252, 0.2);
+            padding: 20px 0;
+        }
+
+        .photo-scroll {
+            display: flex;
+            animation: scroll-photos 40s linear infinite;
+            width: max-content;
+        }
+
+        .photo-item {
+            flex: 0 0 auto;
+            width: clamp(280px, 40vw, 350px);
+            height: clamp(180px, 25vw, 250px);
+            margin: 0 15px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .photo-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            filter: grayscale(0.8) brightness(0.7);
+        }
+
+        .photo-item:hover {
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(109, 93, 252, 0.4);
+            border-color: rgba(109, 93, 252, 0.6);
+        }
+
+        .photo-item:hover img {
+            transform: scale(1.1);
+            filter: grayscale(0) brightness(1);
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+        }
+
+        .photo-item:hover .photo-caption {
+            transform: translateY(0);
+        }
+
+        @keyframes scroll-photos {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Interactive Containers - Enhanced */
+        .interactive-section {
+            padding: 80px 5%;
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fff;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            background: linear-gradient(45deg, #ffffff, #d0cee0, #6d5dfc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6d5dfc, #a363d9, transparent);
+            border-radius: 2px;
+        }
+
+        .containers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .interactive-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            height: 400px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .interactive-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .interactive-container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(109, 93, 252, 0.4);
+            border-color: rgba(109, 93, 252, 0.6);
+        }
+
+        .container-image {
+            width: 100%;
+            position: relative;
+            height: 70%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            filter: brightness(0.8);
+        }
+
+        .interactive-container:hover .container-image {
+            transform: scale(1.1);
+            filter: brightness(1);
+        }
+
+        .container-content {
+            padding: 25px;
+            height: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .container-title {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+            font-weight: 600;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .container-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Footer - Enhanced */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icons a {
+            color: #d0cee0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-icons a:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.4);
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(109, 93, 252, 0.5);
+        }
+
+        /* Enhanced Responsive Design */
+        @media (max-width: 768px) {
+            /* Mobile Navigation */
+            nav {
+                padding: 10px 5%;
+            }
+            
+            .nav-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                margin-top: 15px;
+                gap: 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            nav a {
+                font-size: 1.1rem;
+                padding: 12px;
+                border-bottom: 1px solid rgba(109, 93, 252, 0.2);
+                width: 100%;
+            }
+
+            /* Floating button adjustments */
+            .floating-vote-button {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .floating-vote-button a {
+                padding: 12px 16px;
+            }
+            
+            .vote-image {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .vote-text {
+                font-size: 0.9rem;
+            }
+
+            /* Header adjustments */
+            .header {
+                height: 70vh;
+                min-height: 400px;
+            }
+            
+            .overlapping-text {
+                font-size: clamp(2rem, 10vw, 4rem);
+                -webkit-text-stroke: 1px rgba(255, 255, 255, 0.9);
+            }
+
+            /* Photo scroll adjustments */
+            .photo-item {
+                width: 250px;
+                height: 160px;
+                margin: 0 10px;
+            }
+            
+            .photo-caption {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            /* Container adjustments */
+            .interactive-container {
+                height: 350px;
+            }
+            
+            .container-content {
+                padding: 20px;
+            }
+            
+            .container-title {
+                font-size: 1.2rem;
+            }
+            
+            .container-text {
+                font-size: 0.9rem;
+            }
+
+            .social-icons {
+                gap: 15px;
+            }
+            
+            .social-icons a {
+                font-size: 1.3rem;
+                padding: 10px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small devices */
+            .header {
+                height: 60vh;
+                min-height: 300px;
+            }
+            
+            .overlapping-text {
+                font-size: clamp(1.8rem, 12vw, 3rem);
+            }
+            
+            .photo-item {
+                width: 220px;
+                height: 140px;
+            }
+            
+            .interactive-container {
+                height: 320px;
+            }
+            
+            .containers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-vote-button {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .floating-vote-button a {
+                padding: 10px 14px;
+            }
+            
+            .vote-image {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .vote-text {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Scroll Animations */
+        .photo-item, .interactive-container {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animation for multiple elements */
+        .photo-item:nth-child(1) { animation-delay: 0.1s; }
+        .photo-item:nth-child(2) { animation-delay: 0.2s; }
+        .photo-item:nth-child(3) { animation-delay: 0.3s; }
+        .photo-item:nth-child(4) { animation-delay: 0.4s; }
+        .photo-item:nth-child(5) { animation-delay: 0.5s; }
+
+        .interactive-container:nth-child(1) { animation-delay: 0.2s; }
+        .interactive-container:nth-child(2) { animation-delay: 0.4s; }
+        .interactive-container:nth-child(3) { animation-delay: 0.6s; }
+
+        /* Prevent horizontal scroll */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="nav-top">
+                <h1>Lee Sangwon Voting Team</h1>
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Home</a>
+                <a href="announcements.html">Announcements</a>
+                <a href="votes.html">Voting Polls</a>
+                <a href="stream.html">Streaming links</a>
+                <a href="guides.html">Guides</a>
+                <a href="about.html">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Floating Vote Now Button -->
+    <div class="floating-vote-button">
+        <a href="votes.html">
+            <img src="pics/s2.jpeg" alt="Vote Now" class="vote-image">
+            <span class="vote-text">Vote Now</span>
+        </a>
+    </div>
+
+    <div class="loading-bar"></div>
+
+    <!-- Header with overlapping text -->
+    <div class="header">
+        <img src="images/2.jpg" alt="Lee sangwon" class="main-image">
+        <h1 class="overlapping-text">Lee Sangwon</h1>
+    </div>
+
+    <!-- Infinite scrolling text bar -->
+    <div class="text-scroll-container">
+        <div class="scrolling-text">
+            <span>Vote on IDOL CHAMP</span>
+            <span>Vote on MUBEAT</span>
+            <span>Vote on HIGHER</span>
+            <span>Vote on ALLCHART</span>
+            <span>Vote on MNET PLUS</span>
+            <span>Vote on DUCKAD</span>
+            <span>Vote on KOOKY</span>
+            <span>Vote on UPICK</span>
+             <span>Vote on FANCAST</span>
+              <span>Vote on PICNIC</span>
+               <span>Vote on PADOL</span>
+               <span>Vote on IDOL CHAMP</span>
+            <span>Vote on MUBEAT</span>
+            <span>Vote on HIGHER</span>
+            <span>Vote on ALLCHART</span>
+            <span>Vote on MNET PLUS</span>
+            <span>Vote on DUCKAD</span>
+            <span>Vote on KOOKY</span>
+            <span>Vote on UPICK</span>
+             <span>Vote on FANCAST</span>
+              <span>Vote on PICNIC</span>
+               <span>Vote on PADOL</span>
+        </div>
+    </div>
+
+    <!-- Infinite photo scroll bar with hover effects -->
+    <div class="photo-scroll-container">
+        <h2 class="photo-scroll-title">Lee Sangwon Gallery</h2>
+        <div class="photo-scroll-wrapper">
+            <div class="photo-scroll">
+                <!-- Your photo items remain the same -->
+                <div class="photo-item">
+                    <img src="images/1.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/22.jpg" alt="2">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/3.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/4.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/5.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/6.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <!-- Duplicate for infinite effect -->
+                <div class="photo-item">
+                    <img src="images/1.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/22.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/3.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/4.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/5.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+                <div class="photo-item">
+                    <img src="images/6.jpg" alt="">
+                    <div class="photo-caption"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive containers section -->
+    <div class="interactive-section">
+        <h2 class="section-title">About us</h2>
+        <div class="containers-grid">
+            <div class="interactive-container">
+                <img src="images/VOTINGTEAM.jpg" alt="" class="container-image">
+                <div class="container-content">
+                    <h3 class="container-title">Lee sangwon voting team</h3>
+                    <p class="container-text">Global Voting Team for ALPHA DRIVE ONE's center - Lee Sangwon</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">© 2025 by wonxinau , all rights reserved</p>
+ 
+        <div class="social-icons">
+            <a href="https://x.com/SANGWONVT"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling and fading effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // Close mobile menu when clicking on a link
+            const navLinksArray = document.querySelectorAll('.nav-links a');
+            navLinksArray.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+
+            // Loading animation
+            const loadingBar = document.querySelector('.loading-bar');
+            let width = 0;
+            const loadingInterval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(loadingInterval);
+                    loadingBar.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingBar.style.display = 'none';
+                    }, 500);
+                } else {
+                    width += 5;
+                    loadingBar.style.width = width + '%';
+                }
+            }, 50);
+
+            // Smooth parallax effect for header image
+            const headerImage = document.querySelector('.main-image');
+            let ticking = false;
+            
+            function updateParallax() {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+                if (headerImage) {
+                    headerImage.style.transform = `translateY(${rate}px)`;
+                }
+                ticking = false;
+            }
+            
+            function onScroll() {
+                if (!ticking) {
+                    requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
+            }
+            
+            window.addEventListener('scroll', onScroll);
+
+            // Fade-in elements on scroll
+            const fadeElements = document.querySelectorAll('.photo-scroll-title, .section-title, .interactive-container, .footer');
+            
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+            
+            // Initial check
+            checkFade();
+            window.addEventListener('scroll', checkFade);
+
+            // Add click effect to interactive containers
+            const containers = document.querySelectorAll('.interactive-container');
+            containers.forEach(container => {
+                container.addEventListener('click', function() {
+                    this.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.3)';
+                    setTimeout(() => {
+                        this.style.boxShadow = '';
+                    }, 500);
+                });
+            });
+            
+            // Pause animation on hover for photo scroll
+            const photoScroll = document.querySelector('.photo-scroll');
+            if (photoScroll) {
+                photoScroll.addEventListener('mouseenter', function() {
+                    this.style.animationPlayState = 'paused';
+                });
+                
+                photoScroll.addEventListener('mouseleave', function() {
+                    this.style.animationPlayState = 'running';
+                });
+            }
+
+            // Add staggered animation for photo items
+            const photoItems = document.querySelectorAll('.photo-item');
+            function animatePhotoItems() {
+                photoItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 100);
+                });
+            }
+            
+            // Trigger photo item animation when they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animatePhotoItems();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            const photoScrollContainer = document.querySelector('.photo-scroll-container');
+            if (photoScrollContainer) {
+                observer.observe(photoScrollContainer);
+            }
+        });
+    </script>
+</body>
+</html>

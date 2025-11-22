@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcements</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/ica-rubrik-black');
+    @import url('https://fonts.cdnfonts.com/css/poppins');
+    
+    /* Reset and Base Styles */
+    * { 
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.3;
+    }
+
+    .bg-animation::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(109, 93, 252, 0.1) 0%, transparent 70%);
+        animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-50%, -50%) rotate(180deg); }
+        100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Improved Navigation */
+    nav {
+        width: 100%;
+        height: auto;
+        min-height: 70px;
+        background: rgba(37, 40, 59, 0.95);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        font-family: 'ICA Rubrik';
+        padding: 15px 5%;
+        border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+    }
+
+    .nav-top {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    nav h1 {
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
+        color: white;
+        font-weight: 500;
+        margin: 0;
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-toggle:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-links {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    nav a {
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        color: #d0cee0;
+        font-weight: 400;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+        text-decoration: none;
+        padding: 8px 16px;
+        white-space: nowrap;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    nav a:hover::before {
+        left: 100%;
+    }
+
+    nav a:hover,
+    nav a.active {
+        color: #ffffff;
+        background: rgba(109, 93, 252, 0.1);
+        border-bottom: 2px solid #6d5dfc;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(109, 93, 252, 0.3);
+    }
+
+    /* Main Content Area */
+    .main-content {
+        margin-top: 100px;
+        padding: 40px 5%;
+        min-height: calc(100vh - 100px);
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 60px;
+        padding: 60px 0 40px;
+        position: relative;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #6d5dfc, #a363d9);
+        border-radius: 2px;
+    }
+
+    .page-header h1 {
+        font-family: 'ICA Rubrik';
+        font-size: clamp(3rem, 8vw, 5rem);
+        color: #fff;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        background: linear-gradient(45deg, #ffffff, #d0cee0, #6d5dfc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 10px 30px rgba(109, 93, 252, 0.3);
+    }
+
+    .page-header p {
+        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        color: #d0cee0;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    /* Admin Panel */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        margin-bottom: 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar h1 {
+        margin: 0;
+        font-size: clamp(1.3rem, 4vw, 1.6rem);
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .navbar button {
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        color: white;
+        border: none;
+        padding: clamp(12px, 2vw, 15px) clamp(18px, 3vw, 24px);
+        border-radius: 12px;
+        cursor: pointer;
+        font-family: 'ICA Rubrik';
+        font-size: clamp(0.9rem, 3vw, 1rem);
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(109, 93, 252, 0.4);
+    }
+
+    .navbar button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(109, 93, 252, 0.6);
+        background: linear-gradient(45deg, #a363d9, #6d5dfc);
+    }
+
+    .container {
+        padding: clamp(20px, 5vw, 30px);
+        text-align: center;
+    }
+
+    .admin-panel {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        margin: 40px auto;
+        padding: clamp(25px, 4vw, 40px);
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        max-width: 700px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+    }
+
+    .admin-panel h3 {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        color: #ffffff;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    textarea {
+        width: 100%;
+        max-width: 600px;
+        padding: 20px;
+        margin: 15px 0;
+        border: 2px solid rgba(109, 93, 252, 0.3);
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        resize: vertical;
+        min-height: 120px;
+        font-family: "Poppins", sans-serif;
+    }
+
+    textarea:focus {
+        border-color: #6d5dfc;
+        outline: none;
+        box-shadow: 0 0 20px rgba(109, 93, 252, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .addLink {
+        margin-top: 20px;
+        padding: 15px 30px;
+        background: linear-gradient(45deg, #6d5dfc, #a363d9);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        width: 100%;
+        max-width: 250px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(109, 93, 252, 0.4);
+    }
+
+    .addLink:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(109, 93, 252, 0.6);
+        background: linear-gradient(45deg, #a363d9, #6d5dfc);
+    }
+
+    /* Announcements Container */
+    .announcement-list {
+        max-width: min(900px, 95%);
+        margin: 60px auto;
+        position: relative;
+    }
+
+    .announcement-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        backdrop-filter: blur(10px);
+        padding: clamp(25px, 4vw, 35px);
+        margin: 30px 0;
+        border-radius: 20px;
+        border: 1px solid rgba(109, 93, 252, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        cursor: pointer;
+    }
+
+    .announcement-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(109, 93, 252, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .announcement-card:hover::before {
+        left: 100%;
+    }
+
+    .announcement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(109, 93, 252, 0.4);
+    }
+
+    .announcement-card p {
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #e8e8e8;
+        text-align: left;
+    }
+
+    .announcement-card small {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        display: block;
+        text-align: right;
+        font-style: italic;
+    }
+
+    .announcement-card .announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(109, 93, 252, 0.3);
+    }
+
+    .announcement-card .announcement-icon {
+        font-size: 1.5rem;
+        color: #6d5dfc;
+        margin-right: 15px;
+    }
+
+    .announcement-card button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff4757, #ff3742);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    .announcement-card:hover button {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .announcement-card button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+    }
+
+    /* No Announcements Message */
+    .no-announcements {
+        text-align: center;
+        padding: 80px 40px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.3rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 2px dashed rgba(109, 93, 252, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .no-announcements i {
+        font-size: 3rem;
+        color: rgba(109, 93, 252, 0.5);
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    /* Footer - Enhanced */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(109, 93, 252, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            color: #d0cee0;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icons a {
+            color: #d0cee0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-icons a:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #6d5dfc, #a363d9);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(109, 93, 252, 0.4);
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #6d5dfc, #a363d9, #6d5dfc);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(109, 93, 252, 0.5);
+        }
+
+
+    /* Enhanced Responsive Design */
+    @media screen and (max-width: 1023px) {
+        .nav-links {
+            gap: 10px;
+        }
+        
+        nav a {
+            padding: 8px 14px;
+            font-size: 0.9rem;
+        }
+        
+        .announcement-card {
+            padding: 25px;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: block;
+        }
+        
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            gap: 0;
+        }
+        
+        .nav-links.active {
+            display: flex;
+        }
+        
+        nav a {
+            font-size: 1.1rem;
+            padding: 15px;
+            border-bottom: 1px solid rgba(109, 93, 252, 0.2);
+            width: 100%;
+            margin: 2px 0;
+        }
+
+        .main-content {
+            margin-top: 90px;
+            padding: 20px;
+        }
+
+        .navbar {
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .announcement-card button {
+            position: static;
+            opacity: 1;
+            transform: none;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .announcement-card .announcement-header {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .admin-panel {
+            margin: 20px 0;
+            padding: 25px 20px;
+        }
+        
+        .announcement-card {
+            padding: 20px;
+        }
+        
+        .page-header {
+            padding: 40px 0 20px;
+        }
+    }
+
+    /* Scroll Animations */
+    .announcement-card {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger animation for multiple cards */
+    .announcement-card:nth-child(1) { animation-delay: 0.1s; }
+    .announcement-card:nth-child(2) { animation-delay: 0.2s; }
+    .announcement-card:nth-child(3) { animation-delay: 0.3s; }
+    .announcement-card:nth-child(4) { animation-delay: 0.4s; }
+    .announcement-card:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Loading Animation */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #6d5dfc;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Focus styles for accessibility */
+    button:focus,
+    a:focus,
+    textarea:focus {
+        outline: 2px solid #6d5dfc;
+        outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <header>
+        <nav>
+            <div class="nav-top">
+                <h1>Lee Sangwon Voting Team</h1>
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="announcements.html" class="active">Announcements</a>
+                <a href="votes.html">Voting Polls</a>
+                <a href="stream.html">Streaming links</a>
+                <a href="guides.html">Guides</a>
+                <a href="about.html">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Announcements</h1>
+            <p>Stay updated with the latest news, events, and important updates from our Team</p>
+        </div>
+
+        <div class="navbar">
+            <h1>Community Updates</h1>
+            <button id="adminToggle">Admin Mode</button>
+        </div>
+
+        <div class="container">
+            <!-- ADMIN PANEL -->
+            <div id="adminPanel" class="hidden">
+                <h3>Post New Announcement</h3>
+                <textarea id="announcementText" placeholder="Share important news, events, or updates with the community..."></textarea>
+                <button id="postAnnouncement" class="addLink">
+                    <i class="fas fa-bullhorn"></i> Post Announcement
+                </button>
+            </div>
+        </div>
+
+        <!-- Announcements Container -->
+        <div id="announcementsContainer" class="announcement-list">
+            <!-- Announcements will be dynamically inserted here -->
+        </div>
+    </div>
+ <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">© 2025 by wonxinau , all rights reserved</p>
+ 
+        <div class="social-icons">
+            <a href="https://x.com/SANGWONVT"><i class="fab fa-twitter"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'https://tpeepgwctvpricbngrrw.supabase.co'; // Replace with your Supabase URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwZWVwZ3djdHZwcmljYm5ncnJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2NTc1NjMsImV4cCI6MjA3OTIzMzU2M30.squzAvecPN1EwGMQbHZv3iK6A3MZmW48xDcIgpuy8ug'; // Replace with your Supabase anon key
+        
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                    // Animate hamburger icon
+                    const icon = navToggle.querySelector('i');
+                    if (navLinks.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
+
+            // Close mobile menu when clicking on a link
+            const navLinksArray = document.querySelectorAll('.nav-links a');
+            navLinksArray.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 767) {
+                        navLinks.classList.remove('active');
+                        const icon = navToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            });
+
+            // Add animation to cards when they come into view
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe announcement cards
+            setTimeout(() => {
+                document.querySelectorAll('.announcement-card').forEach(card => {
+                    observer.observe(card);
+                });
+            }, 1000);
+        });
+
+        // Your existing JavaScript functionality for announcements
+        const adminBtn = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        const postAnnouncement = document.getElementById('postAnnouncement');
+        const announcementText = document.getElementById('announcementText');
+        const announcementsContainer = document.getElementById('announcementsContainer');
+
+        let adminMode = false;
+
+        // Check if user was previously in admin mode
+        if (localStorage.getItem('isAdmin') === 'true') {
+            adminMode = true;
+            adminPanel.classList.remove('hidden');
+            adminBtn.textContent = "Exit Admin Mode";
+        }
+
+        adminBtn.addEventListener('click', () => {
+            if (!adminMode) {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === "12345") {
+                    adminMode = true;
+                    localStorage.setItem('isAdmin', 'true');
+                    adminPanel.classList.remove('hidden');
+                    adminBtn.textContent = "Exit Admin Mode";
+                    displayAnnouncements();
+                } else {
+                    alert("Wrong password!");
+                }
+            } else {
+                adminMode = false;
+                localStorage.removeItem('isAdmin');
+                adminPanel.classList.add('hidden');
+                adminBtn.textContent = "Admin Mode";
+                displayAnnouncements();
+            }
+        });
+
+        // Fetch announcements from Supabase
+        async function fetchAnnouncements() {
+            try {
+                const { data, error } = await supabase
+                    .from('announcements')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error fetching announcements:', error);
+                    return [];
+                }
+                
+                return data || [];
+            } catch (error) {
+                console.error('Error fetching announcements:', error);
+                return [];
+            }
+        }
+
+        // Add announcement to Supabase
+        async function addAnnouncement(text) {
+            try {
+                const { data, error } = await supabase
+                    .from('announcements')
+                    .insert([
+                        { 
+                            text: text,
+                            date: new Date().toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })
+                        }
+                    ])
+                    .select();
+                
+                if (error) {
+                    console.error('Error adding announcement:', error);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error adding announcement:', error);
+                return false;
+            }
+        }
+
+        // Delete announcement from Supabase
+        async function deleteAnnouncementById(id) {
+            try {
+                const { error } = await supabase
+                    .from('announcements')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) {
+                    console.error('Error deleting announcement:', error);
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error deleting announcement:', error);
+                return false;
+            }
+        }
+
+        // Display announcements
+        async function displayAnnouncements() {
+            if (!announcementsContainer) return;
+            
+            // Show loading state
+            announcementsContainer.innerHTML = '<div class="loading" style="margin: 50px auto;"></div>';
+            
+            const announcements = await fetchAnnouncements();
+            
+            announcementsContainer.innerHTML = '';
+
+            if (announcements.length === 0) {
+                const noAnnouncements = document.createElement('div');
+                noAnnouncements.classList.add('no-announcements');
+                noAnnouncements.innerHTML = `
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>No Announcements Yet</h3>
+                    <p>${adminMode ? 'Be the first to post an announcement!' : 'Check back later for community updates.'}</p>
+                `;
+                announcementsContainer.appendChild(noAnnouncements);
+                return;
+            }
+
+            announcements.forEach((a, index) => {
+                const div = document.createElement('div');
+                div.classList.add('announcement-card');
+                div.innerHTML = `
+                    <div class="announcement-header">
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-bullhorn announcement-icon"></i>
+                            <strong style="color: #6d5dfc;">Community Update</strong>
+                        </div>
+                        <small>Posted on ${a.date}</small>
+                    </div>
+                    <p>${a.text}</p>
+                    ${adminMode ? `<button onclick="deleteAnnouncement(${a.id})"><i class="fas fa-trash"></i> Delete</button>` : ''}
+                `;
+                announcementsContainer.appendChild(div);
+            });
+        }
+
+        // Post new announcement
+        if (postAnnouncement) {
+            postAnnouncement.addEventListener('click', async () => {
+                const text = announcementText.value.trim();
+                if (!text) {
+                    alert("Please write something first!");
+                    return;
+                }
+
+                // Show loading state
+                const originalText = postAnnouncement.innerHTML;
+                postAnnouncement.innerHTML = '<span class="loading"></span> Posting...';
+                postAnnouncement.disabled = true;
+
+                try {
+                    const success = await addAnnouncement(text);
+                    
+                    if (success) {
+                        announcementText.value = '';
+                        await displayAnnouncements();
+                        
+                        // Show success message
+                        showSuccessMessage('Announcement posted successfully!');
+                    } else {
+                        alert("Failed to post announcement. Please try again.");
+                    }
+                } catch (error) {
+                    console.error('Error posting announcement:', error);
+                    alert("An error occurred while posting the announcement.");
+                } finally {
+                    // Restore button state
+                    postAnnouncement.innerHTML = originalText;
+                    postAnnouncement.disabled = false;
+                }
+            });
+        }
+
+        // Delete announcement (Admin only)
+        async function deleteAnnouncement(id) {
+            if (!adminMode) {
+                alert("Only admins can delete announcements!");
+                return;
+            }
+            
+            if (confirm("Delete this announcement?")) {
+                const success = await deleteAnnouncementById(id);
+                
+                if (success) {
+                    await displayAnnouncements();
+                    showSuccessMessage('Announcement deleted successfully!');
+                } else {
+                    alert("Failed to delete announcement. Please try again.");
+                }
+            }
+        }
+
+        
+
+        window.deleteAnnouncement = deleteAnnouncement;
+
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #2ed573, #27ae60);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(46, 213, 115, 0.4);
+                z-index: 1000;
+                animation: slideInRight 0.5s ease;
+            `;
+            successMsg.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => {
+                successMsg.style.animation = 'slideOutRight 0.5s ease forwards';
+                setTimeout(() => successMsg.remove(), 500);
+            }, 3000);
+        }
+           
+        // Initial display
+        displayAnnouncements();
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const navLinks = document.querySelector('.nav-links');
+            const navToggle = document.querySelector('.nav-toggle');
+            if (window.innerWidth > 767) {
+                navLinks.classList.remove('active');
+                const icon = navToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+
+        // Fade-in elements on scroll
+            const fadeElements = document.querySelectorAll(' .footer');
+            
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+
+             // Initial check
+            checkFade();
+            window.addEventListener('scroll', checkFade);
+
+        // Add CSS for success message animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
